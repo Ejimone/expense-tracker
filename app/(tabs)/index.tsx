@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, FlatList, TouchableOpacity, View, TextInput } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
@@ -7,12 +7,36 @@ import { useExpenses } from '@/context/ExpenseContext';
 import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
-  const { expenses } = useExpenses();
+  const { expenses, sortOrder, setSortOrder, filterRange, setFilterRange } = useExpenses();
   const router = useRouter();
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title" style={styles.title}>Expense Tracker</ThemedText>
+      <View style={styles.controlsContainer}>
+        <View style={styles.sortContainer}>
+          <TouchableOpacity onPress={() => setSortOrder('date')} style={[styles.sortButton, sortOrder === 'date' && styles.activeSortButton]}>
+            <ThemedText>Sort by Date</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setSortOrder('amount')} style={[styles.sortButton, sortOrder === 'amount' && styles.activeSortButton]}>
+            <ThemedText>Sort by Amount</ThemedText>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.filterContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Min Amount"
+            keyboardType="numeric"
+            onChangeText={min => setFilterRange({ ...filterRange, min: parseFloat(min) || 0 })}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Max Amount"
+            keyboardType="numeric"
+            onChangeText={max => setFilterRange({ ...filterRange, max: parseFloat(max) || Infinity })}
+          />
+        </View>
+      </View>
       <FlatList
         data={expenses}
         keyExtractor={(item) => item.id}
@@ -32,7 +56,6 @@ export default function HomeScreen() {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -42,13 +65,42 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
+  controlsContainer: {
+    marginBottom: 16,
+  },
+  sortContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 16,
+  },
+  sortButton: {
+    padding: 8,
+    borderRadius: 8,
+  },
+  activeSortButton: {
+    backgroundColor: Colors.dark.tint,
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  input: {
+    height: 40,
+    borderColor: Colors.dark.icon,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    color: Colors.dark.text,
+    flex: 1,
+    marginHorizontal: 4,
+  },
   expenseItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 16,
     borderRadius: 8,
     marginBottom: 8,
-    backgroundColor: Colors.dark.icon, // Using icon color as a subtle background
+    backgroundColor: Colors.dark.icon,
   },
   expenseDescription: {
     fontSize: 16,
@@ -67,8 +119,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.tint,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 8, // for Android shadow
-    shadowColor: '#000', // for iOS shadow
+    elevation: 8,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -79,3 +131,4 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
 });
+
