@@ -6,6 +6,8 @@ import { Colors } from '@/constants/Colors';
 import { useExpenses } from '@/context/ExpenseContext';
 import { useRouter } from 'expo-router';
 
+import AiChat from '@/components/AiChat';
+
 export default function HomeScreen() {
   const { expenses, sortOrder, setSortOrder, filterRange, setFilterRange } = useExpenses();
   const router = useRouter();
@@ -52,6 +54,7 @@ export default function HomeScreen() {
       <TouchableOpacity style={styles.addButton} onPress={() => router.push('/add-expense')}>
         <ThemedText style={styles.addButtonText}>+</ThemedText>
       </TouchableOpacity>
+      <AiChat />
     </ThemedView>
   );
 }
